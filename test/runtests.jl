@@ -1,6 +1,7 @@
 using Base.Test
 using MiniLogging
 using MiniLogging.Hierarchy
+using MiniLogging.Hierarchy: Ancestors
 
 @test collect(Ancestors("")) == []
 @test collect(Ancestors("a")) == [""]
