@@ -6,7 +6,7 @@ using MiniLogging.Hierarchy: Ancestors
 @test collect(Ancestors("")) == []
 @test collect(Ancestors("a")) == [""]
 @test collect(Ancestors("a.bb.ccc")) == ["a.bb", "a", ""]
-@test collect(Ancestors(".a.bb.ccc")) == ["a.bb", "a", ""]
+@test collect(Ancestors(".a.bb.ccc")) == [".a.bb", ".a", ""]
 @test collect(Ancestors("❤.❤❤.❤❤❤")) == ["❤.❤❤", "❤" , ""]
 @test_throws ErrorException collect(Ancestors("a.b.cc."))
 @test_throws ErrorException collect(Ancestors("a.b..cc"))
