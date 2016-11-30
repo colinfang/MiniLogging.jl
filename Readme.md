@@ -1,16 +1,17 @@
 # MiniLogging.jl
 
+[![Build Status](https://travis-ci.org/colinfang/MiniLogging.jl.svg?branch=master)](https://travis-ci.org/colinfang/MiniLogging.jl)
+
 ## Overview
 
-This package provides a basic hierarchical logging system that is similar to "logging" in Python.
+This package provides a basic hierarchical logging system that is similar to Python logging package.
 
 ## Why another logging package?
 
 When dealing with multple nested modules, the experience with the exising Julia `logging.jl` package isn't very nice.
 
-If I want to keep a logger hierarchy, I have to explicitly pass in a parent logger which might not exist yet.
-
-If I want to change the current logging level, I have to find all descendant loggers and explicitly set them.
+- To keep a logger hierarchy, I have to explicitly pass in a parent logger which might not exist yet.
+- To change the current logging level, I have to find all descendant loggers and explicitly set them.
 
 ## Features
 
