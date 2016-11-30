@@ -4,7 +4,7 @@
 
 ## Overview
 
-This package provides a basic hierarchical logging system that is similar to Python logging package.
+This is a Julia equivalent of Python logging package. It provides a basic hierarchical logging system.
 
 ## Why another logging package?
 
