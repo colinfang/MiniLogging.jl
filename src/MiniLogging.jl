@@ -1,12 +1,25 @@
 module MiniLogging
 
 export get_logger, basic_config
-export @debug, @info, @warn, @error, @critical
 
 include("Hierarchy.jl")
 using .Hierarchy
 
-@enum LogLevel NOTSET DEBUG INFO WARN ERROR CRITICAL
+const LogLevel = Int
+
+const DEFINED_LEVELS = Dict(
+    0 => :NOTSET,
+    10 => :DEBUG,
+    20 => :INFO,
+    30 => :WARN,
+    40 => :ERROR,
+    50 => :CRITICAL,
+)
+
+for (value, symbol) in DEFINED_LEVELS
+    @eval $symbol = $value
+end
+
 
 type Handler
     output::IO
@@ -20,11 +33,18 @@ type Logger
 end
 
 function Base.show(io::IO, logger::MiniLogging.Logger)
+    level_symbol = get(DEFINED_LEVELS, logger.level, nothing)
+    if level_symbol == nothing
+        level_str = string(logger.level)
+    else
+        level_str = string(level_symbol, ":", logger.level)
+    end
+
     if (is_root(logger.name))
-        print(io, "RootLogger($(logger.level))")
+        print(io, "RootLogger($level_str)")
     else
         print(io,
-            """Logger("$(logger.name)", $(logger.level))"""
+            """Logger("$(logger.name)", $level_str)"""
         )
     end
 end
@@ -106,23 +126,23 @@ function _log(
         msg...
     )
     logger_name = is_root(logger.name) ? "Main" : logger.name
+    level_symbol = get(DEFINED_LEVELS, level, nothing)
+    if level_symbol == nothing
+        level_str = string(level)
+    else
+        level_str = string(level_symbol)
+    end
+
     for handler in get_effective_handlers(logger)
         t = Libc.strftime(handler.date_format, time())
-        s = string(t, ":" , level, ":", logger_name, ":" , msg..., "\n")
+        s = string(t, ":" , level_str, ":", logger_name, ":" , msg..., "\n")
         write_log(handler.output, color, s)
     end
 end
 
 
-for (fn, level, color) in [
-        (:debug,    DEBUG,    :cyan),
-        (:info,     INFO,     :blue),
-        (:warn,     WARN,  :magenta),
-        (:error,      ERROR,    :red),
-        (:critical, CRITICAL, :red)
-    ]
-
-    @eval macro $fn(logger, msg...)
+function define_macro(macro_name::Symbol, level::LogLevel, color::Symbol)
+    @eval macro $macro_name(logger, msg...)
         level = $level
         # This generates e.g. `:red`.
         color = $(Expr(:quote, color))
@@ -134,7 +154,31 @@ for (fn, level, color) in [
             end
         end
     end
+    callable_macro_name = Symbol("@", macro_name)
+    @eval export $callable_macro_name
 end
+
+
+for (macro_name, level, color) in [
+        (:debug, DEBUG, :cyan),
+        (:info, INFO, :blue),
+        (:warn, WARN, :magenta),
+        (:error, ERROR, :red),
+        (:critical, CRITICAL, :red)
+    ]
+    define_macro(macro_name, level, color)
+end
+
+
+function define_new_level(
+        macro_name::Symbol,
+        level::LogLevel,
+        color::Symbol=":yellow"
+    )
+    DEFINED_LEVELS[level] = macro_name
+    define_macro(macro_name, level, color)
+end
+
 
 
 

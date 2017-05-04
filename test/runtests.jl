@@ -42,3 +42,6 @@ basic_config(MiniLogging.INFO, date_format="%Y-%m-%d %H:%M:%S")
 logger = get_logger("a.b")
 @info(logger, "Hello", " world", )
 @debug(logger, "Hello", " world", error("no error"))
+
+MiniLogging.define_new_level(:trace, 25, :yellow)
+@trace(logger, "Hello", " world")

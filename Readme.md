@@ -16,9 +16,10 @@ When dealing with multple nested modules, the experience with the exising Julia 
 ## Features
 
 - The logger hierarchy is defined by the logger name, which is a dot-separated string (e.g. `"a.b"`).
-    - This means you can simply use `get_logger(current_module())` to maintain a hierarchy.
+    - Simply use `get_logger(current_module())` to maintain a hierarchy.
 - All loggers inherits their ancestors settings up to root if not explicitly set.
-    - This means you only need to set the config of the root logger in most of the time.
+    - Only need to set the config of the root logger in most of the time.
+- Colors & logging levels are customizable.
 
 ## Exposed Verbs
 
@@ -34,11 +35,11 @@ julia> using MiniLogging
 
 # Get root logger.
 julia> root_logger = get_logger()
-RootLogger(WARN)
+RootLogger(WARN:30)
 
 # This is also root logger.
 julia> get_logger("")
-RootLogger(WARN)
+RootLogger(WARN:30)
 
 # Set config. Do this once only in the script scope.
 # It inserts a handler that outputs message to `STDERR`.
@@ -46,14 +47,14 @@ julia> basic_config(MiniLogging.INFO; date_format="%Y-%m-%d %H:%M:%S")
 
 # It changes the root logger level.
 julia> get_logger("")
-RootLogger(INFO)
+RootLogger(INFO:20)
 
 julia> @warn(root_logger, "Hello", " world")
 2016-11-21 17:31:50:WARN:Main:Hello world
 
 # Get a logger.
 julia> logger = get_logger("a.b")
-Logger("a.b", NOTSET)
+Logger("a.b", NOTSET:0)
 
 # Since the level of `logger` is unset, it inherits its nearest ancestor's level.
 # Its effective level is `INFO` (from `root_logger`) now.
@@ -73,13 +74,19 @@ ERROR: has error
 
 # Get a child logger.
 julia> logger2 = get_logger("a.b.c")
-Logger("a.b.c", NOTSET)
+Logger("a.b.c", NOTSET:0)
 
 # Its effective level now is `DEBUG` (from `logger`) now.
 julia> @debug(logger2, "Hello", " world")
 2016-11-21 17:34:38:DEBUG:a.b.c:Hello world
 
+```
+
+## Add A New Level
 
 
-
+```julia
+julia> MiniLogging.define_new_level(:trace, 25, :yellow)
+julia> @trace(logger, "Hello", " world")
+2017-05-04 15:44:04:trace:a.b:Hello world
 ```
