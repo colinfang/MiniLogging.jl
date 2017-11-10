@@ -17,8 +17,8 @@ When dealing with multple nested modules, the experience with the exising Julia 
 
 - The logger hierarchy is defined by the logger name, which is a dot-separated string (e.g. `"a.b"`).
     - Simply use `get_logger(current_module())` to maintain a hierarchy.
-- All loggers inherits their ancestors settings up to root if not explicitly set.
-    - Only need to set the config of the root logger in most of the time.
+- All loggers inherit settings from their ancestors up to the root by default.
+    - Most of the time it is sufficient to set the root logger config only.
 - Colors & logging levels are customizable.
 
 ## Exposed Verbs
@@ -34,6 +34,7 @@ export @debug, @info, @warn, @error, @critical
 julia> using MiniLogging
 
 # Get root logger.
+# Nothing appears as we haven't set any config on any loggers.
 julia> root_logger = get_logger()
 RootLogger(WARN:30)
 
@@ -41,9 +42,9 @@ RootLogger(WARN:30)
 julia> get_logger("")
 RootLogger(WARN:30)
 
-# Set config. Do this once only in the script scope.
+# Set root config.
 # It inserts a handler that outputs message to `STDERR`.
-julia> basic_config(MiniLogging.INFO; date_format="%Y-%m-%d %H:%M:%S")
+julia> basic_config(MiniLogging.INFO)
 
 # It changes the root logger level.
 julia> get_logger("")
@@ -81,6 +82,21 @@ julia> @debug(logger2, "Hello", " world")
 2016-11-21 17:34:38:DEBUG:a.b.c:Hello world
 
 ```
+
+## `basic_config`
+
+- `basic_config(level::LogLevel; date_format::String="%Y-%m-%d %H:%M:%S")`
+    - Log to `STDERR`.
+- `basic_config(level::LogLevel, file_name::String; date_format::String="%Y-%m-%d %H:%M:%S", file_mode::String="a")`
+    - Log to `file_name`.
+
+```julia
+# Log to both `STDERR` & `foo`.
+basic_config(MiniLogging.INFO, "foo")
+root_logger = get_logger()
+push!(root_logger.handlers, MiniLogging.Handler(STDERR, "%Y-%m-%d %H:%M:%S”))
+```
+
 
 ## Add A New Level
 

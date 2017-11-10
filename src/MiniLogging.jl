@@ -118,6 +118,13 @@ function basic_config(level::LogLevel; date_format::String="%Y-%m-%d %H:%M:%S")
     push!(ROOT.handlers, handler)
 end
 
+function basic_config(level::LogLevel, file_name::String; date_format::String="%Y-%m-%d %H:%M:%S", file_mode::String="a")
+    ROOT.level = level
+    f = open(file_name, file_mode)
+    handler = Handler(f, date_format)
+    push!(ROOT.handlers, handler)
+end
+
 write_log{T<:IO}(output::T, color::Symbol, msg::AbstractString) = (print(output, msg); flush(output))
 write_log(output::Base.TTY, color::Symbol, msg::AbstractString) = Base.print_with_color(color, output, msg)
 

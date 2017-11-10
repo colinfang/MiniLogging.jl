@@ -38,7 +38,7 @@ push!(t, "")
 @test parent_node(t, "") == ""
 
 
-basic_config(MiniLogging.INFO, date_format="%Y-%m-%d %H:%M:%S")
+basic_config(MiniLogging.INFO)
 logger = get_logger("a.b")
 @info(logger, "Hello", " world", )
 @debug(logger, "Hello", " world", error("no error"))
