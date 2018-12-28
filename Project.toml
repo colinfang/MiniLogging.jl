@@ -1,2 +1,6 @@
+name = "MiniLogging"
+uuid = "5d5e4fec-0af4-11e9-03ef-99b6f4db81c2"
+version = "0.1"
+
 [deps]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
