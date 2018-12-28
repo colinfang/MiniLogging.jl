@@ -9,7 +9,7 @@ include("ancestors.jl")
 # - `"a.b..c"` & `"a.b.c."` are not valid.
 # A parent node is the nearest ancestor node in `Tree`, fallback to `""` of not found.
 
-immutable Tree
+struct Tree
     parent_node::Dict{String, String}
     # node => descendants
     # @assert has_node(t, descendant)

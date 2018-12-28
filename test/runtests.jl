@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 using MiniLogging
 using MiniLogging.Hierarchy
 using MiniLogging.Hierarchy: Ancestors

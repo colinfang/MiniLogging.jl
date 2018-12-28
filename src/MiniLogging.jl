@@ -21,12 +21,12 @@ for (value, symbol) in DEFINED_LEVELS
 end
 
 
-type Handler
+mutable struct Handler
     output::IO
     date_format::String
 end
 
-type Logger
+mutable struct Logger
     name::String
     level::LogLevel
     handlers::Vector{Handler}
@@ -114,7 +114,7 @@ end
 
 function basic_config(level::LogLevel; date_format::String="%Y-%m-%d %H:%M:%S")
     ROOT.level = level
-    handler = Handler(STDERR, date_format)
+    handler = Handler(stderr, date_format)
     push!(ROOT.handlers, handler)
 end
 
@@ -125,8 +125,8 @@ function basic_config(level::LogLevel, file_name::String; date_format::String="%
     push!(ROOT.handlers, handler)
 end
 
-write_log{T<:IO}(output::T, color::Symbol, msg::AbstractString) = (print(output, msg); flush(output))
-write_log(output::Base.TTY, color::Symbol, msg::AbstractString) = Base.print_with_color(color, output, msg)
+write_log(output::T, color::Symbol, msg::AbstractString) where {T<:IO} = (print(output, msg); flush(output))
+write_log(output::Base.TTY, color::Symbol, msg::AbstractString) = Base.printstyled(output, msg, color=color)
 
 function _log(
         logger::Logger, level::LogLevel, color::Symbol,
