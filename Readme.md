@@ -8,7 +8,7 @@ This is a Julia equivalent of Python logging package. It provides a basic hierar
 
 ## Why another logging package?
 
-When dealing with multple nested modules, the experience with the exising Julia `logging.jl` package isn't very nice.
+When dealing with multiple nested modules, the experience with the existing Julia `logging.jl` package isn't very nice.
 
 - To keep a logger hierarchy, I have to explicitly pass in a parent logger which might not exist yet.
 - To change the current logging level, I have to find all descendant loggers and explicitly set them.

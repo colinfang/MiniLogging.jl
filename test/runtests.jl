@@ -38,10 +38,20 @@ push!(t, "")
 @test parent_node(t, "") == ""
 
 
-basic_config(MiniLogging.INFO)
-logger = get_logger("a.b")
-@info(logger, "Hello", " world", )
-@debug(logger, "Hello", " world", error("no error"))
+open("stdout.out", "w") do f1
+    open("stderr.out", "w") do f2
+        redirect_stdout(f1) do
+            redirect_stderr(f2) do
+                include("test_log.jl")
+            end
+        end
+    end
+end
 
-MiniLogging.define_new_level(:trace, 25, :yellow)
-@trace(logger, "Hello", " world")
+out1 = readlines("stdout.log")
+err1 = readlines("stderr.log")
+out2 = readlines("stdout.out")
+err2 = readlines("stderr.out")
+
+@test out1 == out2
+@test err1 == err2
