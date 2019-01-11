@@ -2,6 +2,15 @@
 
 [![Build Status](https://travis-ci.org/colinfang/MiniLogging.jl.svg?branch=master)](https://travis-ci.org/colinfang/MiniLogging.jl)
 
+# Note
+
+- v0.1 is last release that supports Julia v0.6.
+- Users have to explicitly export logging macros because they are already used by `Base`.
+    ```julia
+    using MiniLogging
+    # Explicitly shadow Base
+    using MiniLogging: @debug, @info, @warn, @error, @critical
+    ```
 ## Overview
 
 This is a Julia equivalent of Python logging package. It provides a basic hierarchical logging system.
@@ -16,7 +25,7 @@ When dealing with multiple nested modules, the experience with the existing Juli
 ## Features
 
 - The logger hierarchy is defined by the logger name, which is a dot-separated string (e.g. `"a.b"`).
-    - Simply use `get_logger(current_module())` to maintain a hierarchy.
+    - Simply use `get_logger(@__MODULE__)` to maintain a hierarchy.
 - All loggers inherit settings from their ancestors up to the root by default.
     - Most of the time it is sufficient to set the root logger config only.
 - Colors & logging levels are customizable.
@@ -32,6 +41,7 @@ export @debug, @info, @warn, @error, @critical
 
 ```julia
 julia> using MiniLogging
+julia> using MiniLogging: @debug, @info, @warn, @error, @critical
 
 # Get root logger.
 # Nothing appears as we haven't set any config on any loggers.
@@ -91,10 +101,10 @@ julia> @debug(logger2, "Hello", " world")
     - Log to `file_name`.
 
 ```julia
-# Log to both `STDERR` & `foo`.
+# Log to both `STDERR` &  a file.
 basic_config(MiniLogging.INFO, "foo")
 root_logger = get_logger()
-push!(root_logger.handlers, MiniLogging.Handler(STDERR, "%Y-%m-%d %H:%M:%S”))
+push!(root_logger.handlers, MiniLogging.Handler(stderr, "%Y-%m-%d %H:%M:%S”))
 ```
 
 

@@ -1,13 +1,14 @@
-using Base.Test
+using Test
 using MiniLogging
+using MiniLogging: @debug, @info, @warn, @error, @critical
 using MiniLogging.Hierarchy
 using MiniLogging.Hierarchy: Ancestors
 
 @test collect(Ancestors("")) == []
 @test collect(Ancestors("a")) == [""]
 @test collect(Ancestors("a.bb.ccc")) == ["a.bb", "a", ""]
-@test collect(Ancestors(".a.bb.ccc")) == [".a.bb", ".a", ""]
 @test collect(Ancestors("❤.❤❤.❤❤❤")) == ["❤.❤❤", "❤" , ""]
+@test_throws ErrorException collect(Ancestors(".a.bb.ccc"))
 @test_throws ErrorException collect(Ancestors("a.b.cc."))
 @test_throws ErrorException collect(Ancestors("a.b..cc"))
 
@@ -30,10 +31,6 @@ push!(t, "a.b.❤.d")
 @test parent_node(t, "a.b.❤.d") == "a.b"
 push!(t, "a")
 @test parent_node(t, "a") == ""
-push!(t, ".a.b")
-@test parent_node(t, ".a.b") == ""
-push!(t, ".a.b.c")
-@test parent_node(t, ".a.b.c") == ".a.b"
 push!(t, "")
 @test parent_node(t, "") == ""
 
