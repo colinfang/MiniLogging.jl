@@ -5,11 +5,11 @@ export Tree, parent_node
 include("ancestors.jl")
 
 # - A node is a dot-separated string representing hierarchy.
-# - E.g. `""`, `"a"`, `".a.b"`, `"a.bb.ccc"`.
-# - `"a.b..c"` & `"a.b.c."` are not valid.
+# - E.g. `""`, `a`, `a.b`, `a.bb.ccc`.
+# - `a.b..c` & `a.b.c.` & `.a.b` are not valid.
 # A parent node is the nearest ancestor node in `Tree`, fallback to `""` of not found.
 
-immutable Tree
+struct Tree
     parent_node::Dict{String, String}
     # node => descendants
     # @assert has_node(t, descendant)

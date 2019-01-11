@@ -1,32 +1,40 @@
-immutable Ancestors
+struct Ancestors
     node::String
 
     function Ancestors(node::String)
-        if endswith(node, '.')
+        if endswith(node, '.') || startswith(node, '.')
             error("Invalid node $node - Cannot end with `.`")
         end
         new(node)
     end
 end
 
-Base.start(x::Ancestors) = endof(x.node)
 
-function Base.next(a::Ancestors, state)
-    node = a.node
-    i = rsearch(node, '.', state)
-    if i > 1
-        state = prevind(node, i)
+function Base.iterate(x::Ancestors, state=nothing)
+    node = x.node
+    if state == 0 || isempty(node)
+        return nothing
+    end
+
+    if state == nothing
+        state = lastindex(node)
+    end
+
+    r = findprev(".", node, state)
+    if r == nothing
+        return "", 0
+    else
+        @assert r.start == r.stop
+        state = prevind(node, r.start)
         if node[state] == '.'
             error("Invalid node $node - Cannot have `..`")
         end
-        node[1:state], state
-    else
-        "", 0
+        return node[1:state], state
     end
 end
 
-Base.done(::Ancestors, state) = state < 1
-Base.iteratorsize(::Type{Ancestors}) = Base.SizeUnknown()
+
+Base.IteratorSize(::Type{Ancestors}) = Base.SizeUnknown()
 Base.eltype(::Type{Ancestors}) = String
 
 is_ancestor_or_self(ancestor::String, descendant::String) = startswith(descendant, ancestor)
