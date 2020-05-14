@@ -34,7 +34,7 @@ end
 
 function Base.show(io::IO, logger::MiniLogging.Logger)
     level_symbol = get(DEFINED_LEVELS, logger.level, nothing)
-    if level_symbol == nothing
+    if level_symbol === nothing
         level_str = string(logger.level)
     else
         level_str = string(level_symbol, ":", logger.level)
@@ -134,7 +134,7 @@ function _log(
     )
     logger_name = is_root(logger.name) ? "Main" : logger.name
     level_symbol = get(DEFINED_LEVELS, level, nothing)
-    if level_symbol == nothing
+    if level_symbol === nothing
         level_str = string(level)
     else
         level_str = string(level_symbol)

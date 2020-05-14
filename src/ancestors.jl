@@ -12,16 +12,16 @@ end
 
 function Base.iterate(x::Ancestors, state=nothing)
     node = x.node
-    if state == 0 || isempty(node)
+    if state === 0 || isempty(node)
         return nothing
     end
 
-    if state == nothing
+    if state === nothing
         state = lastindex(node)
     end
 
     r = findprev(".", node, state)
-    if r == nothing
+    if r === nothing
         return "", 0
     else
         @assert r.start == r.stop
